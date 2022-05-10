@@ -89,19 +89,18 @@ router.post("/:id/delete", (req, res, next) =>{
 
 
 //get y post para editar pelis "/movies/:id/edit"
-router.get("/:id/edit", (req, res, next)=>{
+router.get("/:id/edit", async (req, res, next)=>{
 
     const{id}= req.params
-    
-    MovieModel.findById()
-    .then((movie)=>{
+    try {
+        const movie = await MovieModel.findById(id)
+        const listCelebrities = await CelebrityModel.find().select("name")
         res.render("movies/edit-movie.hbs", {
-            movie
+            movie,
+            listCelebrities
         })
-    })
-    .catch((err) => {
-        next(err)
-      })
+    }
+    catch (err){}         
 
 
 })
@@ -111,18 +110,18 @@ router.post("/:id/edit", (req, res, next)=>{
     const{id}= req.params
     const { title, genre, plot, cast } = req.body
     
-    MovieModel.findByIdAndUpdate(id,{
+    MovieModel.findOneAndUpdate(id, {
         title, 
         genre, 
         plot, 
         cast
     })
-    .then((movie)=>{
-        res.redirect(`/movies/${id}/details`)
+    .then((movie) => {
+        res.redirect(`/movies/${movie._id}`)
     })
     .catch((err) => {
         next(err)
-      })
+    })
 
 
 })
