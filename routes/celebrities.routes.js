@@ -9,10 +9,10 @@ router.get("/create", (req, res, next)=>{
 })
 
 //POST => añadir a la DB la celeb que te inventes
-router.post("/", (req, res, next)=>{
+router.post("/create", (req, res, next)=>{
 
     console.log(req.body)
-    const {name, occupation, catchPhrase} = req.body
+    const { name, occupation, catchPhrase } = req.body
 
 
     CelebrityModel.create({
@@ -21,7 +21,7 @@ router.post("/", (req, res, next)=>{
         catchPhrase
     })
     .then(()=>{
-        res.redirect("celebrities/celebrities.hbs")
+        res.redirect("/celebrities")
     })
     .catch((err)=>{
         next(err)
@@ -33,17 +33,16 @@ router.post("/", (req, res, next)=>{
 //GET => lista de celebrities
 router.get("/",(req, res, next)=>{
 
-    CelebrityModel.find().select("name")
+    CelebrityModel.find()
     .then((celebrity)=>{
-        res.render("celebrities/celebrities.hbs")
-        listCelebrity: celebrity
+        res.render("celebrities/celebrities.hbs", {
+            celebrity
+        })
+        
     })
     .catch((err)=>{
         next(err)
     })
-
-
 })
-
 
 module.exports = router;
