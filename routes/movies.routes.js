@@ -54,7 +54,78 @@ router.get("/",(req, res, next)=>{
     })
 })
 
+//GET => ruta dinamica de pelis
+router.get("/:id", (req, res, next) =>{
 
+    const {id} = req.params
+
+    MovieModel.findById(id).populate("cast")
+    .then((movie) =>{
+        res.render("movies/movies-details.hbs", {
+            movie
+        })  
+    })
+    .catch((err) => {
+        next(err)
+      })
+})
+
+
+//POST "/movies/:id/delete" ruta para eliminar peli
+router.post("/:id/delete", (req, res, next) =>{
+
+    const {id} = req.params
+
+    MovieModel.findByIdAndDelete(id)
+    .then(()=>{
+
+        res.redirect("/movies")
+    })
+    .catch((err) => {
+        next(err)
+      })
+
+})
+
+
+//get y post para editar pelis "/movies/:id/edit"
+router.get("/:id/edit", (req, res, next)=>{
+
+    const{id}= req.params
+    
+    MovieModel.findById()
+    .then((movie)=>{
+        res.render("movies/edit-movie.hbs", {
+            movie
+        })
+    })
+    .catch((err) => {
+        next(err)
+      })
+
+
+})
+
+router.post("/:id/edit", (req, res, next)=>{
+
+    const{id}= req.params
+    const { title, genre, plot, cast } = req.body
+    
+    MovieModel.findByIdAndUpdate(id,{
+        title, 
+        genre, 
+        plot, 
+        cast
+    })
+    .then((movie)=>{
+        res.redirect(`/movies/${id}/details`)
+    })
+    .catch((err) => {
+        next(err)
+      })
+
+
+})
 
 
 module.exports = router;
